@@ -25,13 +25,6 @@
         android:background="@color/rouge_dawan" />
 
     <TextView
-        android:id="@+id/tv_detail_address"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textColor="@color/white"
-        android:textSize="16sp" />
-
-    <TextView
         android:id="@+id/tv_detail_coords"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -39,5 +32,12 @@
         android:textColor="@color/white"
         android:textSize="13sp"
         android:textStyle="italic" />
+
+    <TextView
+        android:id="@+id/tv_detail_address"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/white"
+        android:textSize="16sp" />
 
 </LinearLayout>
