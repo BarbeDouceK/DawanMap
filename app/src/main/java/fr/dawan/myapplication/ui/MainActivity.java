@@ -45,6 +45,9 @@ public class MainActivity extends AppCompatActivity {
     private LocationDao gestionnaireDonneesLocales;
     private static final String URL_API_DAWAN = "https://dawan.org/";
 
+    // COmme le linter /code analysis me disait de mettre des try with ressources mais que cela faisait planter le multi-thread, je déclare un exécuteur réutilisable
+    private final java.util.concurrent.ExecutorService executeurDeTaches = java.util.concurrent.Executors.newSingleThreadExecutor();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -90,10 +93,11 @@ public class MainActivity extends AppCompatActivity {
             public void onResponse(@NonNull Call<List<Location>> appel, @NonNull Response<List<Location>> reponse) {
                 if (reponse.isSuccessful() && reponse.body() != null) {
                     // Pour respecter SOLID : newSingleThreadExecutor() J'ai import au début le Executor
-                    Executors.newSingleThreadExecutor().execute(() -> {
+
+                    executeurDeTaches.execute(() -> {
                         gestionnaireDonneesLocales.insertAll(reponse.body()); // On ajoute en BDD la réponse de l'API
                         runOnUiThread(MainActivity.this::actualiserMarqueursSurCarte); // On met à jour la mAP
-                    });
+                        });
                 }
             }
 
@@ -107,29 +111,29 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void actualiserMarqueursSurCarte() {
-        Executors.newSingleThreadExecutor().execute(() -> {
-            List<Location> centresDawan = gestionnaireDonneesLocales.getAll();
+            executeurDeTaches.execute(() -> {
+                List<Location> centresDawan = gestionnaireDonneesLocales.getAll();
 
-            // Retour sur le fil principal (Main/UI Thread) pour mettre à jour l'affichage
-            runOnUiThread(() -> {
-                carteInteractive.getOverlays().clear();
+                // Retour sur le fil principal (Main/UI Thread) pour mettre à jour l'affichage
+                runOnUiThread(() -> {
+                    carteInteractive.getOverlays().clear();
 
-                for (Location centre : centresDawan) {
-                    GeoPoint coordonneesGPS = new GeoPoint(centre.getLatitude(), centre.getLongitude());
+                    for (Location centre : centresDawan) {
+                        GeoPoint coordonneesGPS = new GeoPoint(centre.getLatitude(), centre.getLongitude());
 
-                    Marker epingle = new Marker(carteInteractive);
-                    epingle.setPosition(coordonneesGPS);
-                    epingle.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
-                    epingle.setTitle(centre.getName());
+                        Marker epingle = new Marker(carteInteractive);
+                        epingle.setPosition(coordonneesGPS);
+                        epingle.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
+                        epingle.setTitle(centre.getName());
 
-                    epingle.setOnMarkerClickListener((marqueurClique, vueCarte) -> {
-                        afficherDetailsCentre(centre.getAddress(), centre.getLatitude(), centre.getLongitude());
-                        return true;
-                    });
+                        epingle.setOnMarkerClickListener((marqueurClique, vueCarte) -> {
+                            afficherDetailsCentre(centre.getAddress(), centre.getLatitude(), centre.getLongitude());
+                            return true;
+                        });
 
-                    carteInteractive.getOverlays().add(epingle);
-                }
-                carteInteractive.invalidate();
+                        carteInteractive.getOverlays().add(epingle);
+                    }
+                    carteInteractive.invalidate();
             });
         });
     }
