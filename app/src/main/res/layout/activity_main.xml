@@ -26,6 +26,15 @@
             android:background="@color/rouge_dawan"
             android:layout_gravity="top" />
 
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/btn_mode_hors_ligne"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:src="@android:drawable/ic_menu_preferences" />
+
     </FrameLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
