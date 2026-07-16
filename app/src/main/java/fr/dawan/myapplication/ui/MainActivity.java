@@ -1,9 +1,10 @@
 package fr.dawan.myapplication.ui;
 
+import android.content.Context;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.room.Room;
 
@@ -20,6 +21,7 @@ import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.Marker;
 
 import java.util.List;
+import java.util.concurrent.Executors; // multi-threading (SOLID) ==> Par défaut, Android interdit d'exécuter des requêtes de base de données (Room/SQLite) sur le fil d'exécution principal (*Main Thread* ou *UI Thread*).
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -47,8 +49,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // Configuration du moteur cartographique OpenStreetMap
-        Configuration.getInstance().load(this, PreferenceManager.getDefaultSharedPreferences(this));
+        Configuration.getInstance().load(this, getSharedPreferences("osmdroid", Context.MODE_PRIVATE));
         Configuration.getInstance().setUserAgentValue(getPackageName());
 
         setContentView(R.layout.activity_main);
@@ -58,32 +59,22 @@ public class MainActivity extends AppCompatActivity {
         synchroniserCentresFormation();
     }
 
-    /**
-     * Paramètre la vue cartographique et définit le point de centrage par défaut.
-     */
     private void initialiserCarte() {
         carteInteractive = findViewById(R.id.map);
         carteInteractive.setTileSource(TileSourceFactory.MAPNIK);
         carteInteractive.setMultiTouchControls(true);
         carteInteractive.getController().setZoom(6.0);
-        // Centrage France
+        // Centré sur laFrance
         carteInteractive.getController().setCenter(new GeoPoint(46.603354, 1.888334));
     }
 
-    /**
-     * Prépare l'instance de la base de données locale (SQLite).
-     */
     private void initialiserBaseDeDonnees() {
         AppDatabase baseDeDonnees = Room.databaseBuilder(getApplicationContext(),
                         AppDatabase.class, "dawan_database")
-                .allowMainThreadQueries() // Toléré dans le cadre de cette maquette d'expertise
-                .build();
+                            .build();
         gestionnaireDonneesLocales = baseDeDonnees.locationDao();
     }
 
-    /**
-     * Interroge l'API REST pour récupérer les dernières données et met à jour l'affichage.
-     */
     private void synchroniserCentresFormation() {
         Retrofit clientReseau = new Retrofit.Builder()
                 .baseUrl(URL_API_DAWAN)
@@ -92,54 +83,57 @@ public class MainActivity extends AppCompatActivity {
 
         DawanApi api = clientReseau.create(DawanApi.class);
 
-        api.getLocations().enqueue(new Callback<List<Location>>() {
+        // Utilisation de l'opérateur diamant <> (Explicit type argument) ??
+        api.getLocations().enqueue(new Callback<>() {
             @Override
-            public void onResponse(Call<List<Location>> appel, Response<List<Location>> reponse) {
+            // @NON NULL demandé par le COde Analysis => Warning:(97, 57) Not annotated parameter overrides @EverythingIsNonNull parameter
+            public void onResponse(@NonNull Call<List<Location>> appel, @NonNull Response<List<Location>> reponse) {
                 if (reponse.isSuccessful() && reponse.body() != null) {
-                    // Sauvegarde persistante des données récupérées
-                    gestionnaireDonneesLocales.insertAll(reponse.body());
-                    actualiserMarqueursSurCarte();
+                    // Pour respecter SOLID : newSingleThreadExecutor() J'ai import au début le Executor
+                    Executors.newSingleThreadExecutor().execute(() -> {
+                        gestionnaireDonneesLocales.insertAll(reponse.body()); // On ajoute en BDD la réponse de l'API
+                        runOnUiThread(MainActivity.this::actualiserMarqueursSurCarte); // On met à jour la mAP
+                    });
                 }
             }
 
             @Override
-            public void onFailure(Call<List<Location>> appel, Throwable erreur) {
-                // Déclenchement du mode hors-connexion
+            public void onFailure(@NonNull Call<List<Location>> appel, @NonNull Throwable erreur) {
+                // ISO 27001 (Confidentialité) : L'erreur technique n'est pas exposée à l'utilisateur
                 Toast.makeText(MainActivity.this, "Réseau indisponible : Mode hors-ligne activé", Toast.LENGTH_LONG).show();
                 actualiserMarqueursSurCarte();
             }
         });
     }
 
-    /**
-     * Extrait les centres de formation de la base de données et les positionne sur la carte.
-     */
     private void actualiserMarqueursSurCarte() {
-        List<Location> centresDawan = gestionnaireDonneesLocales.getAll();
-        carteInteractive.getOverlays().clear();
+        Executors.newSingleThreadExecutor().execute(() -> {
+            List<Location> centresDawan = gestionnaireDonneesLocales.getAll();
 
-        for (Location centre : centresDawan) {
-            GeoPoint coordonneesGPS = new GeoPoint(centre.getLatitude(), centre.getLongitude());
+            // Retour sur le fil principal (Main/UI Thread) pour mettre à jour l'affichage
+            runOnUiThread(() -> {
+                carteInteractive.getOverlays().clear();
 
-            Marker epingle = new Marker(carteInteractive);
-            epingle.setPosition(coordonneesGPS);
-            epingle.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
-            epingle.setTitle(centre.getName());
+                for (Location centre : centresDawan) {
+                    GeoPoint coordonneesGPS = new GeoPoint(centre.getLatitude(), centre.getLongitude());
 
-            // Écouteur d'évènement : ouverture du panneau de détails au clic
-            epingle.setOnMarkerClickListener((marqueurClique, vueCarte) -> {
-                afficherDetailsCentre(centre.getAddress(), centre.getLatitude(), centre.getLongitude());
-                return true;
+                    Marker epingle = new Marker(carteInteractive);
+                    epingle.setPosition(coordonneesGPS);
+                    epingle.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
+                    epingle.setTitle(centre.getName());
+
+                    epingle.setOnMarkerClickListener((marqueurClique, vueCarte) -> {
+                        afficherDetailsCentre(centre.getAddress(), centre.getLatitude(), centre.getLongitude());
+                        return true;
+                    });
+
+                    carteInteractive.getOverlays().add(epingle);
+                }
+                carteInteractive.invalidate();
             });
-
-            carteInteractive.getOverlays().add(epingle);
-        }
-        carteInteractive.invalidate(); // Rafraîchissement graphique du composant
+        });
     }
 
-    /**
-     * Déploie le Fragment contenant les informations détaillées du centre sélectionné.
-     */
     private void afficherDetailsCentre(String adresse, double latitude, double longitude) {
         getSupportFragmentManager().beginTransaction()
                 .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
