@@ -21,7 +21,6 @@ import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.Marker;
 
 import java.util.List;
-import java.util.concurrent.Executors; // multi-threading (SOLID) ==> Par défaut, Android interdit d'exécuter des requêtes de base de données (Room/SQLite) sur le fil d'exécution principal (*Main Thread* ou *UI Thread*).
 
 import retrofit2.Call;
 import retrofit2.Callback;
