@@ -4,7 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#000000">
+    android:background="@color/osm_water">
 
     <org.osmdroid.views.MapView
         android:id="@+id/map"
@@ -17,13 +17,13 @@
         android:id="@+id/fragment_container"
         android:layout_width="match_parent"
         android:layout_height="250dp"
-        android:background="#1A1A1A"
+        android:background="@color/osm_water"
         app:layout_constraintBottom_toBottomOf="parent">
 
         <View
             android:layout_width="match_parent"
             android:layout_height="4dp"
-            android:background="#FF0000"
+            android:background="@color/rouge_dawan"
             android:layout_gravity="top" />
 
     </FrameLayout>

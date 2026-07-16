@@ -2,6 +2,13 @@
 <resources>
     <color name="black">#000000</color>
     <color name="white">#FFFFFF</color>
-    <color name="dawan_red">#FF0000</color>
+    <color name="rouge_dawan">#8B0000</color>
     <color name="dark_grey">#1A1A1A</color>
+     <!-- Couleurs type OpenStreetMap -->
+     <color name="osm_land">#F2EFE9</color>
+     <color name="osm_water">#AAD3DF</color>
+     <color name="osm_park">#C8FACC</color>
+     <color name="osm_building">#D9D0C9</color>
+     <color name="osm_motorway">#E892A2</color>
+     <color name="osm_primary_road">#FCD6A4</color>
 </resources>

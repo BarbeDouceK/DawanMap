@@ -66,7 +66,7 @@ public class MainActivity extends AppCompatActivity {
         carteInteractive.setTileSource(TileSourceFactory.MAPNIK);
         carteInteractive.setMultiTouchControls(true);
         carteInteractive.getController().setZoom(6.0);
-        // Centrage sur la France continentale
+        // Centrage France
         carteInteractive.getController().setCenter(new GeoPoint(46.603354, 1.888334));
     }
 

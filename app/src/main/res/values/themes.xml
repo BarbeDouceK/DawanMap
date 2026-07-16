@@ -1,8 +1,19 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
-    <style name="Base.Theme.MyApplication" parent="Theme.AppCompat.Light.DarkActionBar">
-        <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+<resources xmlns:tools="[http://schemas.android.com/tools](http://schemas.android.com/tools)">
+    <!-- Thème de base moderne sans barre d'action (Idéal pour des cartes) -->
+    <style name="Base.Theme.MyApplication" parent="Theme.MaterialComponents.Light.NoActionBar">
+
+        <!-- Couleur principale de l'app (ex: pour ta barre de navigation) -->
+        <item name="colorPrimary">@color/osm_water</item>
+
+        <!-- Couleur de mise en évidence (ex: boutons d'action flottants) -->
+        <item name="colorAccent">@color/osm_primary_road</item>
+
+        <!-- Couleur d'arrière-plan par défaut de l'application -->
+        <item name="android:windowBackground">@color/osm_land</item>
+
+        <!-- Couleur du texte principal (Gris foncé pour l'accessibilité !) -->
+        <item name="android:textColorPrimary">#333333</item>
+
     </style>
 
     <style name="Theme.MyApplication" parent="Base.Theme.MyApplication" />
