@@ -55,6 +55,4 @@ dependencies {
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
 
-    // Si tu as bien ajouté libs.test.rules à l'étape précédente, tu peux aussi l'ajouter ici
-    // androidTestImplementation(libs.test.rules)
 }
