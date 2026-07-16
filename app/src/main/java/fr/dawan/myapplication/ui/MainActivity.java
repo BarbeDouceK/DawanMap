@@ -27,8 +27,6 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-
 /**
  * Activité principale gérant l'interface cartographique de l'application.
  * <p>
