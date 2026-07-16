@@ -16,7 +16,7 @@ public class Location {
     @SerializedName("longitude")
     private double longitude;
 
-    // Getters et Setters (Indispensables)
+    // Getters et Setters
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
     public String getName() { return name; }

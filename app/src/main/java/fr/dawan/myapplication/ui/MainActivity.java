@@ -12,6 +12,7 @@ import fr.dawan.myapplication.R;
 import fr.dawan.myapplication.data.AppDatabase;
 import fr.dawan.myapplication.data.DawanApi;
 import fr.dawan.myapplication.data.LocationDao;
+import fr.dawan.myapplication.data.RetrofitClient;
 import fr.dawan.myapplication.model.Location;
 
 import org.osmdroid.config.Configuration;
@@ -78,12 +79,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void synchroniserCentresFormation() {
-        Retrofit clientReseau = new Retrofit.Builder()
-                .baseUrl(URL_API_DAWAN)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
 
-        DawanApi api = clientReseau.create(DawanApi.class);
+        // On utilise le singleton RetrofitCLient !! => On use interface donc on respecte Dependency Inversion Principle + Interface Segregation Principle
+        DawanApi api = RetrofitClient.getClient().create(DawanApi.class);
 
         // Utilisation de l'opérateur diamant <> (Explicit type argument) ??
         api.getLocations().enqueue(new Callback<>() {
