@@ -26,8 +26,6 @@ import java.util.List;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
  * Activité principale gérant l'interface cartographique de l'application.
@@ -43,7 +41,6 @@ public class MainActivity extends AppCompatActivity {
 
     private MapView carteInteractive;
     private LocationDao gestionnaireDonneesLocales;
-    private static final String URL_API_DAWAN = "https://dawan.org/";
 
     // COmme le linter /code analysis me disait de mettre des try with ressources mais que cela faisait planter le multi-thread, je déclare un exécuteur réutilisable
     private final java.util.concurrent.ExecutorService executeurDeTaches = java.util.concurrent.Executors.newSingleThreadExecutor();
