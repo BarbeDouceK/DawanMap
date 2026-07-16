@@ -47,7 +47,6 @@ public class MainActivity extends AppCompatActivity {
     // COmme le linter /code analysis me disait de mettre des try with ressources mais que cela faisait planter le multi-thread, je déclare un exécuteur réutilisable
     private final java.util.concurrent.ExecutorService executeurDeTaches = java.util.concurrent.Executors.newSingleThreadExecutor();
 
-    private boolean estEnModeHorsLigne = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,18 +56,6 @@ public class MainActivity extends AppCompatActivity {
         Configuration.getInstance().setUserAgentValue(getPackageName());
 
         setContentView(R.layout.activity_main);
-
-        FloatingActionButton btnHorsLigne = findViewById(R.id.btn_mode_hors_ligne);
-        btnHorsLigne.setOnClickListener(vue -> {
-            estEnModeHorsLigne = !estEnModeHorsLigne;
-
-            // Toast
-            String message = estEnModeHorsLigne ? "Mode Hors-ligne ACTIVÉ" : "Mode En ligne RÉTABLI";
-            android.widget.Toast.makeText(this, message, android.widget.Toast.LENGTH_SHORT).show();
-
-            // Déclenchement de la mise à jour de la carte
-            synchroniserCentresFormation();
-        });
 
         initialiserCarte();
         initialiserBaseDeDonnees();
@@ -92,12 +79,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void synchroniserCentresFormation() {
-
-        if (estEnModeHorsLigne) {
-            actualiserMarqueursSurCarte();
-            return;
-        }
-        // Par défaut du else vu qu'on a return
 
         // On utilise le singleton RetrofitCLient !! => On use interface donc on respecte Dependency Inversion Principle + Interface Segregation Principle
         DawanApi api = RetrofitClient.getClient().create(DawanApi.class);
