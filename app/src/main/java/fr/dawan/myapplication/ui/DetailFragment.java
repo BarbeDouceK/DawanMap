@@ -9,6 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import fr.dawan.myapplication.R;
+import fr.dawan.myapplication.utils.FormatUtils;
 
 /**
  * Composant d'interface (Fragment) dédié à la présentation des détails d'un centre.
@@ -46,10 +47,11 @@ public class DetailFragment extends Fragment {
         if (getArguments() != null) {
             champAdresse.setText(getArguments().getString(CLE_ADRESSE));
 
-            // Application d'un formatage strict à 5 décimales pour la précision GPS
-            String texteCoordonnees = String.format("Coordonnées GPS : %.5f, %.5f",
+            // Appel de la méthode externalisée
+            String texteCoordonnees = FormatUtils.formaterCoordonneesGps(
                     getArguments().getDouble(CLE_LATITUDE),
-                    getArguments().getDouble(CLE_LONGITUDE));
+                    getArguments().getDouble(CLE_LONGITUDE)
+            );
             champCoordonnees.setText(texteCoordonnees);
         }
         return gabaritVue;
