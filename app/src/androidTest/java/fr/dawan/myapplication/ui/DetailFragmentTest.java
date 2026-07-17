@@ -54,38 +54,41 @@ public class DetailFragmentTest {
 
         // 2. Initialisation du paquet de données (*Bundle*)
         Bundle arguments = new Bundle();
-        arguments.putString("adresse_centre", adresseMock);
-        arguments.putDouble("latitude_centre", latitudeMock);
-        arguments.putDouble("longitude_centre", longitudeMock);
+        arguments.putString(CLE_ADRESSE, adresseMock);
+        arguments.putDouble(CLE_LATITUDE, latitudeMock);
+        arguments.putDouble(CLE_LONGITUDE, longitudeMock);
 
-        // 3. Lancement du composant de manière isolée
-        FragmentScenario.launchInContainer(DetailFragment.class, arguments);
+        // 3. Lancement du composant de manière isolée avec try-with-resources
+        try (FragmentScenario<DetailFragment> scenario = FragmentScenario.launchInContainer(DetailFragment.class, arguments)) {
 
-        // 4. Vérification de l'adresse (on suppose que FormatUtils renvoie "Nantes")
-        Espresso.onView(ViewMatchers.withId(R.id.tv_detail_address))
-                .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
-                .check(ViewAssertions.matches(ViewMatchers.withText(adresseMock)));
+            // 4. Vérification de l'adresse
+            Espresso.onView(ViewMatchers.withId(R.id.tv_detail_address))
+                    .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+                    .check(ViewAssertions.matches(ViewMatchers.withText(adresseMock)));
 
-        // 5. Vérification des coordonnées
-        String coordonneesAttendues = "48.8698, 2.3322"; // Adapte selon le formatage réel (ex: avec ° N, etc.)
-        Espresso.onView(ViewMatchers.withId(R.id.tv_detail_coords))
-                .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
-                .check(ViewAssertions.matches(ViewMatchers.withText(coordonneesAttendues)));
+            // 5. Vérification des coordonnées (corrigé avec les coordonnées de Nantes)
+            String coordonneesAttendues = "47.2184, -1.5536"; // Adapte selon le formatage réel de FormatUtils
+            Espresso.onView(ViewMatchers.withId(R.id.tv_detail_coords))
+                    .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+                    .check(ViewAssertions.matches(ViewMatchers.withText(coordonneesAttendues)));
+        }
     }
 
     @Test
     public void verifieLaValeurParDefautSiAdresseVide() {
         Bundle arguments = new Bundle();
         // On passe intentionnellement une adresse nulle
-        arguments.putString("adresse_centre", null);
-        arguments.putDouble("latitude_centre", 0.0);
-        arguments.putDouble("longitude_centre", 0.0);
+        arguments.putString(CLE_ADRESSE, null);
+        arguments.putDouble(CLE_LATITUDE, 0.0);
+        arguments.putDouble(CLE_LONGITUDE, 0.0);
 
-        FragmentScenario.launchInContainer(DetailFragment.class, arguments);
+        // Lancement avec try-with-resources pour fermer proprement le scénario
+        try (FragmentScenario<DetailFragment> scenario = FragmentScenario.launchInContainer(DetailFragment.class, arguments)) {
 
-        // Vérification de la valeur de repli (*fallback*) "Adresse non communiquée"
-        Espresso.onView(ViewMatchers.withId(R.id.tv_detail_address))
-                .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
-                .check(ViewAssertions.matches(ViewMatchers.withText("Adresse non communiquée")));
+            // Vérification de la valeur de repli (*fallback*) "Adresse non communiquée"
+            Espresso.onView(ViewMatchers.withId(R.id.tv_detail_address))
+                    .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+                    .check(ViewAssertions.matches(ViewMatchers.withText("Adresse non communiquée")));
+        }
     }
 }
