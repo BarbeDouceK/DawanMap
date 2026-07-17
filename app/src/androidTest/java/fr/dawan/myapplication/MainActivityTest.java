@@ -21,8 +21,12 @@ public class MainActivityTest {
             new ActivityScenarioRule<>(MainActivity.class);
 
     @Test
-    public void testMapIsVisible() {
-        // Vérifie que le fragment de la carte est bien affiché
+    public void presenceMap() {
         onView(withId(R.id.map)).check(matches(isDisplayed()));
+    }
+
+    @Test
+    public void epingleClickable() {
+
     }
 }
