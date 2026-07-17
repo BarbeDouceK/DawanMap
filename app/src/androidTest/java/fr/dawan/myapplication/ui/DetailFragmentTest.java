@@ -66,8 +66,9 @@ public class DetailFragmentTest {
                     .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
                     .check(ViewAssertions.matches(ViewMatchers.withText(adresseMock)));
 
-            // 5. Vérification des coordonnées (corrigé avec les coordonnées de Nantes)
-            String coordonneesAttendues = "47.2184, -1.5536"; // Adapte selon le formatage réel de FormatUtils
+            // 5. Vérification des coordonnées
+            // On met exactement la chaîne formatée par ton FormatUtils
+            String coordonneesAttendues = "Coordonnées GPS : 47.21840, -1.55360";
             Espresso.onView(ViewMatchers.withId(R.id.tv_detail_coords))
                     .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
                     .check(ViewAssertions.matches(ViewMatchers.withText(coordonneesAttendues)));

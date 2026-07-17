@@ -27,6 +27,7 @@ public class MainActivityTest {
 
     @Test
     public void epingleClickable() {
-
+        // Très compliqué car interprété comme des pixels sur la map
+        // JE dois rappeller et mocker l'action plutôt que le click car pas d'ID dans le layout XML
     }
 }
