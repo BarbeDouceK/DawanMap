@@ -19,12 +19,23 @@ import fr.dawan.myapplication.utils.FormatUtils;
  * @author Baptiste LOUERAT
  */
 public class DetailFragment extends Fragment {
+
+    /** Clé d'identification pour transmettre l'adresse via le paquet de données (Bundle). */
     public static final String CLE_ADRESSE = "adresse_centre";
+    /** Clé d'identification pour transmettre la latitude via le paquet de données (Bundle). */
     public static final String CLE_LATITUDE = "latitude_centre";
+    /** Clé d'identification pour transmettre la longitude via le paquet de données (Bundle). */
     public static final String CLE_LONGITUDE = "longitude_centre";
 
     /**
      * Fabrique une nouvelle instance du composant avec ses paramètres requis.
+     * Cette méthode centralise la création du paquet de données (Bundle) pour éviter
+     * les erreurs de clés lors de l'instanciation.
+     *
+     * @param adresse   L'adresse postale du centre de formation.
+     * @param latitude  La latitude GPS du centre.
+     * @param longitude La longitude GPS du centre.
+     * @return Une instance préparée de {@link DetailFragment}.
      */
     public static DetailFragment nouvelleInstance(String adresse, double latitude, double longitude) {
         DetailFragment fragment = new DetailFragment();
@@ -36,6 +47,16 @@ public class DetailFragment extends Fragment {
         return fragment;
     }
 
+    /**
+     * Construit et initialise la vue de ce composant.
+     * Récupère les données transmises lors de l'instanciation, les sécurise, les formate
+     * et les injecte dans les composants textuels (TextView).
+     *
+     * @param constructeurVue L'objet permettant de gonfler (inflate) le fichier XML en vue Java.
+     * @param conteneur       Le conteneur parent qui accueillera l'interface.
+     * @param etatSauvegarde  L'état précédent du composant s'il a été reconstruit.
+     * @return La hiérarchie de vues (View) prête à être affichée.
+     */
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater constructeurVue, @Nullable ViewGroup conteneur, @Nullable Bundle etatSauvegarde) {

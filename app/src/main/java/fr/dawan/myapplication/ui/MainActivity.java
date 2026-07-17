@@ -39,13 +39,24 @@ import retrofit2.Response;
  */
 public class MainActivity extends AppCompatActivity {
 
+    /** Composant d'interface gérant l'affichage de la carte OpenStreetMap. */
     private MapView carteInteractive;
+
+    /** Objet d'accès aux données (DAO) pour manipuler les centres en base de données locale. */
     private LocationDao gestionnaireDonneesLocales;
 
-    // COmme le linter /code analysis me disait de mettre des try with ressources mais que cela faisait planter le multi-thread, je déclare un exécuteur réutilisable
+    /**
+     * Pool de fils d'exécution (Thread) dédié aux opérations lourdes (réseau et base de données).
+     * Évite de bloquer le fil d'exécution principal (UI Thread) et résout les problèmes de multi-threading.
+     */
     private final java.util.concurrent.ExecutorService executeurDeTaches = java.util.concurrent.Executors.newSingleThreadExecutor();
 
-
+    /**
+     * Initialise l'activité, configure la cartographie (Osmdroid), la base de données
+     * et lance la synchronisation initiale des données.
+     *
+     * @param savedInstanceState État précédemment sauvegardé de l'activité, le cas échéant.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,6 +71,10 @@ public class MainActivity extends AppCompatActivity {
         synchroniserCentresFormation();
     }
 
+    /**
+     * Configure les paramètres par défaut de la carte interactive :
+     * source des tuiles (Mapnik), contrôles tactiles, niveau de zoom et centrage sur la France.
+     */
     private void initialiserCarte() {
         carteInteractive = findViewById(R.id.map);
         carteInteractive.setTileSource(TileSourceFactory.MAPNIK);
@@ -69,13 +84,21 @@ public class MainActivity extends AppCompatActivity {
         carteInteractive.getController().setCenter(new GeoPoint(46.603354, 1.888334));
     }
 
+    /**
+     * Construit l'instance de la base de données locale (Room) et initialise le gestionnaire de données (DAO).
+     */
     private void initialiserBaseDeDonnees() {
         AppDatabase baseDeDonnees = Room.databaseBuilder(getApplicationContext(),
                         AppDatabase.class, "dawan_database")
-                            .build();
+                .build();
         gestionnaireDonneesLocales = baseDeDonnees.locationDao();
     }
 
+    /**
+     * Effectue un appel réseau asynchrone vers l'interface de programmation (API) de Dawan.
+     * Si le succès est confirmé, les données sont insérées en base locale via un fil d'exécution secondaire.
+     * En cas d'échec (ex: pas de réseau), l'application bascule sur les données locales existantes.
+     */
     private void synchroniserCentresFormation() {
 
         // On utilise le singleton RetrofitCLient !! => On use interface donc on respecte Dependency Inversion Principle + Interface Segregation Principle
@@ -92,7 +115,7 @@ public class MainActivity extends AppCompatActivity {
                     executeurDeTaches.execute(() -> {
                         gestionnaireDonneesLocales.insertAll(reponse.body()); // On ajoute en BDD la réponse de l'API
                         runOnUiThread(MainActivity.this::actualiserMarqueursSurCarte); // On met à jour la mAP
-                        });
+                    });
                 }
             }
 
@@ -105,34 +128,47 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Lit les données depuis la base locale (sur un fil d'exécution secondaire) et
+     * génère les épingles (marqueurs) sur la carte. Le rafraîchissement visuel
+     * est délégué au fil d'exécution principal (UI Thread).
+     */
     private void actualiserMarqueursSurCarte() {
-            executeurDeTaches.execute(() -> {
-                List<Location> centresDawan = gestionnaireDonneesLocales.getAll();
+        executeurDeTaches.execute(() -> {
+            List<Location> centresDawan = gestionnaireDonneesLocales.getAll();
 
-                // Retour sur le fil principal (Main/UI Thread) pour mettre à jour l'affichage
-                runOnUiThread(() -> {
-                    carteInteractive.getOverlays().clear();
+            // Retour sur le fil principal (Main/UI Thread) pour mettre à jour l'affichage
+            runOnUiThread(() -> {
+                carteInteractive.getOverlays().clear();
 
-                    for (Location centre : centresDawan) {
-                        GeoPoint coordonneesGPS = new GeoPoint(centre.getLatitude(), centre.getLongitude());
+                for (Location centre : centresDawan) {
+                    GeoPoint coordonneesGPS = new GeoPoint(centre.getLatitude(), centre.getLongitude());
 
-                        Marker epingle = new Marker(carteInteractive);
-                        epingle.setPosition(coordonneesGPS);
-                        epingle.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
-                        epingle.setTitle(centre.getName());
+                    Marker epingle = new Marker(carteInteractive);
+                    epingle.setPosition(coordonneesGPS);
+                    epingle.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
+                    epingle.setTitle(centre.getName());
 
-                        epingle.setOnMarkerClickListener((marqueurClique, vueCarte) -> {
-                            afficherDetailsCentre(centre.getAddress(), centre.getLatitude(), centre.getLongitude());
-                            return true;
-                        });
+                    epingle.setOnMarkerClickListener((marqueurClique, vueCarte) -> {
+                        afficherDetailsCentre(centre.getAddress(), centre.getLatitude(), centre.getLongitude());
+                        return true;
+                    });
 
-                        carteInteractive.getOverlays().add(epingle);
-                    }
-                    carteInteractive.invalidate();
+                    carteInteractive.getOverlays().add(epingle);
+                }
+                carteInteractive.invalidate();
             });
         });
     }
 
+    /**
+     * Instancie et affiche le panneau de détails du centre sélectionné.
+     * Gère la transaction du fragment avec une animation d'apparition/disparition.
+     *
+     * @param adresse   L'adresse physique récupérée pour le centre.
+     * @param latitude  La coordonnée de latitude.
+     * @param longitude La coordonnée de longitude.
+     */
     private void afficherDetailsCentre(String adresse, double latitude, double longitude) {
         getSupportFragmentManager().beginTransaction()
                 .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
@@ -140,12 +176,18 @@ public class MainActivity extends AppCompatActivity {
                 .commit();
     }
 
+    /**
+     * Relance le rendu de la carte lorsque l'activité repasse au premier plan.
+     */
     @Override
     public void onResume() {
         super.onResume();
         carteInteractive.onResume();
     }
 
+    /**
+     * Suspend le rendu de la carte et libère les ressources visuelles lorsque l'activité passe en arrière-plan.
+     */
     @Override
     public void onPause() {
         super.onPause();
