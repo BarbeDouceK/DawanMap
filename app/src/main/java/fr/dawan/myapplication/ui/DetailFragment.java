@@ -45,7 +45,9 @@ public class DetailFragment extends Fragment {
         TextView champCoordonnees = gabaritVue.findViewById(R.id.tv_detail_coords);
 
         if (getArguments() != null) {
-            champAdresse.setText(getArguments().getString(CLE_ADRESSE));
+            // Protection contre les nulls : on utilise le FormatUtils
+            String adresseSecurisee = FormatUtils.securiserTexteApi(getArguments().getString(CLE_ADRESSE), "Adresse non communiquée");
+            champAdresse.setText(adresseSecurisee);
 
             // Appel de la méthode externalisée
             String texteCoordonnees = FormatUtils.formaterCoordonneesGps(

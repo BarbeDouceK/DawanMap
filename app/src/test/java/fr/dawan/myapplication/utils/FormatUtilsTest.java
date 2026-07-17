@@ -21,4 +21,30 @@ public class FormatUtilsTest {
 
         assertEquals("Coordonnées GPS : 47.00000, -1.00000", resultat);
     }
+    @Test
+    public void verificationTexteApi_avecValeurNulle() {
+        // Scénario : L'API ne renvoie pas le champ "adresse" (null)
+        String resultat = FormatUtils.securiserTexteApi(null, "Adresse inconnue");
+
+        // On s'attend à recevoir la valeur de secours
+        assertEquals("Adresse inconnue", resultat);
+    }
+
+    @Test
+    public void verificationTexteApi_avecValeurVide() {
+        // Scénario : L'API renvoie un titre rempli d'espaces blancs ou vide
+        String resultat = FormatUtils.securiserTexteApi("   ", "Titre non renseigné");
+
+        // On s'attend à recevoir la valeur de secours
+        assertEquals("Titre non renseigné", resultat);
+    }
+
+    @Test
+    public void verificationTexteApi_avecValeurValide() {
+        // Scénario : L'API renvoie une donnée parfaitement valide
+        String resultat = FormatUtils.securiserTexteApi("10 rue de la Paix", "Adresse inconnue");
+
+        // On s'attend à recevoir la donnée d'origine, intacte
+        assertEquals("10 rue de la Paix", resultat);
+    }
 }

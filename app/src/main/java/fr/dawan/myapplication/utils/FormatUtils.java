@@ -12,4 +12,16 @@ public class FormatUtils {
         // Cela évite que tes tests plantent si l'ordinateur qui compile est configuré en français (qui utilise la virgule)
         return String.format(Locale.US, "Coordonnées GPS : %.5f, %.5f", latitude, longitude);
     }
+
+    /**
+     * Vérifie un texte provenant de l'API et retourne une valeur par défaut de secours
+     * si le texte est nul ou vide.
+     */
+    public static String securiserTexteApi(String texteApi, String valeurParDefaut) {
+        // Si la valeur est nulle, ou si elle ne contient que des espaces (trim)
+        if (texteApi == null || texteApi.trim().isEmpty()) {
+            return valeurParDefaut;
+        }
+        return texteApi;
+    }
 }
