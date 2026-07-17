@@ -55,7 +55,6 @@ dependencies {
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
 
-    androidTestImplementation("androidx.fragment:fragment-testing:1.8.9")
     debugImplementation("androidx.fragment:fragment-testing:1.8.9")
 
 }
