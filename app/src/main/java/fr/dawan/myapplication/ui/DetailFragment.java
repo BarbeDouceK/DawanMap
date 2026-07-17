@@ -19,9 +19,9 @@ import fr.dawan.myapplication.utils.FormatUtils;
  * @author Baptiste LOUERAT
  */
 public class DetailFragment extends Fragment {
-    private static final String CLE_ADRESSE = "adresse_centre";
-    private static final String CLE_LATITUDE = "latitude_centre";
-    private static final String CLE_LONGITUDE = "longitude_centre";
+    public static final String CLE_ADRESSE = "adresse_centre";
+    public static final String CLE_LATITUDE = "latitude_centre";
+    public static final String CLE_LONGITUDE = "longitude_centre";
 
     /**
      * Fabrique une nouvelle instance du composant avec ses paramètres requis.

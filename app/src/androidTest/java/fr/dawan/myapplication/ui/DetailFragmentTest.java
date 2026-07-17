@@ -1,5 +1,9 @@
 package fr.dawan.myapplication.ui;
 
+import static fr.dawan.myapplication.ui.DetailFragment.CLE_ADRESSE;
+import static fr.dawan.myapplication.ui.DetailFragment.CLE_LATITUDE;
+import static fr.dawan.myapplication.ui.DetailFragment.CLE_LONGITUDE;
+
 import android.os.Bundle;
 
 import androidx.fragment.app.testing.FragmentScenario;
@@ -36,9 +40,9 @@ public class DetailFragmentTest {
 
         // 4. Vérifications (*Assertions*)
         Assert.assertNotNull("Les arguments ne devraient pas être nuls", arguments);
-        Assert.assertEquals("L'adresse n'est pas celle attendue", adresseAttendue, arguments.getString("adresse_centre"));
-        Assert.assertEquals("La latitude n'est pas celle attendue", latitudeAttendue, arguments.getDouble("latitude_centre"), 0.0001);
-        Assert.assertEquals("La longitude n'est pas celle attendue", longitudeAttendue, arguments.getDouble("longitude_centre"), 0.0001);
+        Assert.assertEquals("L'adresse n'est pas celle attendue", adresseAttendue, arguments.getString(CLE_ADRESSE));
+        Assert.assertEquals("La latitude n'est pas celle attendue", latitudeAttendue, arguments.getDouble(CLE_LATITUDE), 0.0001);
+        Assert.assertEquals("La longitude n'est pas celle attendue", longitudeAttendue, arguments.getDouble(CLE_LONGITUDE), 0.0001);
     }
 
     @Test
