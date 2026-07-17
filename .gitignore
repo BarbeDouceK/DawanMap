@@ -1,15 +1,45 @@
-*.iml
-.gradle
-/local.properties
-/.idea/caches
-/.idea/libraries
-/.idea/modules.xml
-/.idea/workspace.xml
-/.idea/navEditor.xml
-/.idea/assetWizardSettings.xml
-.DS_Store
-/build
-/captures
-.externalNativeBuild
-.cxx
+# -------------------------------------------------------------------------
+# Fichiers de compilation et de cache (Build & Cache)
+# -------------------------------------------------------------------------
+build/
+*/build/
+.gradle/
+
+# -------------------------------------------------------------------------
+# Configuration locale et SDK (NE JAMAIS COMMITTER)
+# -------------------------------------------------------------------------
 local.properties
+
+# -------------------------------------------------------------------------
+# Environnement de Développement Intégré (IDE - Android Studio)
+# -------------------------------------------------------------------------
+# Ignore la totalité du dossier .idea et tous les fichiers liés à l'éditeur
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# -------------------------------------------------------------------------
+# Profilage, captures et builds natifs (C/C++)
+# -------------------------------------------------------------------------
+/captures/
+.externalNativeBuild/
+.cxx/
+
+# -------------------------------------------------------------------------
+# Fichiers Système (macOS / Windows)
+# -------------------------------------------------------------------------
+.DS_Store
+Thumbs.db
+
+# -------------------------------------------------------------------------
+# Sécurité & Production (CRITIQUE)
+# -------------------------------------------------------------------------
+# Magasins de clés (Keystores) de signature d'application
+*.jks
+*.keystore
+
+# Fichiers contenant des mots de passe ou des clés d'API
+keystore.properties
+secrets.properties
+apikeys.properties
