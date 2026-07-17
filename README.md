@@ -48,7 +48,7 @@ cd "Android - CC"
 
 1. Lancez **Android Studio**
 2. Choisissez **Open** et sélectionnez le dossier racine du projet
-3. Attendez la fin de la synchronisation Gradle (téléchargement des dépendances)
+3. Attendez la fin de la synchronisation Gradle (téléchargement des dépendances) PEtit Éléphant
 
 ### 3. Lancer l'application
 
@@ -144,16 +144,16 @@ Exemple de structure d'un objet `Location` :
 
 Vérifient que la carte est visible au lancement :
 
-```bash
-gradlew.bat connectedAndroidTest
+``` manuel
+androidTest > CLique droit > Run all Tests
 ```
-
 Fichier : `app/src/androidTest/java/fr/dawan/myapplication/MainActivityTest.java`
 
 ### Tests unitaires
 
-```bash
-gradlew.bat test
+``` manuel
+Dans "test" seulement cette fois pour les unitaires :
+> Run FormatUtilsTest
 ```
 
 ## Configuration
@@ -169,7 +169,7 @@ gradlew.bat test
 
 - `INTERNET` — appels API
 - `ACCESS_NETWORK_STATE` — détection de la connectivité
-- `WRITE_EXTERNAL_STORAGE` — cache des tuiles Osmdroid
+- `WRITE_EXTERNAL_STORAGE` — cache des tuiles Osmdroid AVEC VERSIONNAGE car déprécié
 
 > **Note :** L'application utilise **Osmdroid** (OpenStreetMap) et non Google Maps. La clé API Google présente dans le manifeste n'est pas utilisée par le code actuel.
 
@@ -183,5 +183,7 @@ gradlew.bat test
 | Erreur `allowMainThreadQueries`   | Volontaire pour cet exercice ; à éviter en production |
 
 ## Auteur
+
+Baptiste LOUËRAT ♪
 
 Projet réalisé dans le cadre de la formation **Expert IT** — Spécialisation Applications Intelligentes et Big Data (Dawan).
